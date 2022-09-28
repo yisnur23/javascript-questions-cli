@@ -64,6 +64,8 @@ const App = () => {
         setQuestionIndex={setQuestionIndex}
       />
     );
+  } else if (page === ScreeOptions.Stats) {
+    return <Stats userInfo={userInfo} setPage={setPage} />;
   }
 };
 
