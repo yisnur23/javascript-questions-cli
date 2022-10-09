@@ -3,11 +3,11 @@ const { Box, Text, Newline } = require('ink');
 const { ScreeOptions } = require('../constants');
 const { default: SelectInput } = require('ink-select-input');
 
-const Stats = ({ userInfo, setPage }) => {
+const Stats = ({ userInfo, setPage, totalQuestions }) => {
   return (
     <Box flexDirection="column" padding={1}>
       <Text color="#F0DB4F">
-        User Name : {userInfo.username} <Newline />
+        Name : {userInfo.username} <Newline />
       </Text>
       <Text color="green">
         Correctly Answered : {userInfo.correctlyAnswered.length}
@@ -15,7 +15,7 @@ const Stats = ({ userInfo, setPage }) => {
       <Text color="red">
         Incorrectly Answered : {userInfo.incorrectlyAnswered.length}
       </Text>
-      {/* <Text color="#F0DB4F">Total Question : {totalQn}</Text> */}
+      <Text color="#F0DB4F">Total Questions : {totalQuestions}</Text>
       <Text>
         <Newline />
       </Text>
