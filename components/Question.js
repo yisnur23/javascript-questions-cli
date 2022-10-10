@@ -5,6 +5,7 @@ const { default: SelectInput } = require('ink-select-input');
 const { default: Markdown } = require('ink-markdown');
 const { ScreeOptions } = require('../constants');
 const { writeUserInfo } = require('../utils');
+const dedent = require('dedent');
 
 const Question = ({
   question,
@@ -17,30 +18,30 @@ const Question = ({
   const [isCorrect, setIsCorrect] = useState(false);
 
   const handleSelect = item => {
-    setAnswerState(1);
+    let updatedUserInfo = {
+      ...userInfo,
+      questionIndex: (userInfo.questionIndex || 0) + 1,
+    };
+    let isAnswerCorrect = false;
     if (item.value === question.answer) {
-      writeUserInfo({
-        ...userInfo,
-
+      isAnswerCorrect = true;
+      updatedUserInfo = {
+        ...updatedUserInfo,
         correctlyAnswered: [...userInfo.correctlyAnswered, question.id],
-      })
-        .then(data => {
-          setIsCorrect(true);
-          setUserInfo(data);
-        })
-        .catch(err => console.log(err));
+      };
     } else {
-      writeUserInfo({
-        ...userInfo,
-
+      updatedUserInfo = {
+        ...updatedUserInfo,
         incorrectlyAnswered: [...userInfo.incorrectlyAnswered, question.id],
-      })
-        .then(data => {
-          setIsCorrect(false);
-          setUserInfo(data);
-        })
-        .catch(err => console.log(err));
+      };
     }
+    writeUserInfo(updatedUserInfo)
+      .then(userInfo => {
+        setUserInfo(userInfo);
+        setIsCorrect(isAnswerCorrect);
+        setAnswerState(1);
+      })
+      .catch(err => console.log(err));
   };
 
   return (
@@ -50,8 +51,13 @@ const Question = ({
         <Newline />
       </Text>
       {question.question ? (
-        <Box borderStyle="singleDouble" borderColor="yellow">
-          <Markdown code="green">{question.question}</Markdown>
+        <Box
+          borderStyle="single"
+          alignItems="center"
+          justifyContent="flex-start"
+          borderColor="yellow"
+        >
+          <Markdown>{dedent(question.question)}</Markdown>
         </Box>
       ) : (
         <Text></Text>
@@ -103,17 +109,10 @@ const Question = ({
             ]}
             onSelect={item => {
               if (item.value) {
-                writeUserInfo({
-                  ...userInfo,
-                  questionIndex: (userInfo.questionIndex || 0) + 1,
-                })
-                  .then(user => {
-                    setUserInfo(user);
-                    setQuestionIndex(user.questionIndex);
-                    setAnswerState(0);
-                  })
-                  .catch(err => console.log(err));
+                setAnswerState(0);
+                setQuestionIndex(userInfo.questionIndex);
               } else {
+                setQuestionIndex(userInfo.questionIndex);
                 setPage(ScreeOptions.Welcome);
               }
             }}
