@@ -13,17 +13,16 @@ const Question = importJsx('./components/Question');
 
 const App = () => {
   const [userInfo, setUserInfo] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(ScreeOptions.Welcome);
-  const [questions, setQuestions] = useState();
+  const [questions, setQuestions] = useState([]);
   const [questionIndex, setQuestionIndex] = useState(0);
 
   useEffect(() => {
-    setLoading(true);
     loadUserInfo()
       .then(user => {
         setUserInfo(user);
-        setQuestionIndex(user.questionIndex);
+        setQuestionIndex(user.questionIndex || 0);
 
         getQuestions().then(questions => {
           setLoading(false);
@@ -45,6 +44,7 @@ const App = () => {
             userInfo={userInfo}
             setUserInfo={setUserInfo}
             setPage={setPage}
+            totalQuestions={questions.length || 0}
           />
         )}
       </Box>
@@ -65,7 +65,13 @@ const App = () => {
       />
     );
   } else if (page === ScreeOptions.Stats) {
-    return <Stats userInfo={userInfo} setPage={setPage} />;
+    return (
+      <Stats
+        userInfo={userInfo}
+        setPage={setPage}
+        totalQuestions={questions.length}
+      />
+    );
   }
 };
 
